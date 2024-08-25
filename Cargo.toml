@@ -1,6 +1,19 @@
-[package]
-name = "valhall"
+[workspace]
+resolver = "2"
+members = [
+    "crates/valhall",
+    "crates/valhall-docs",
+    "crates/valhall-index",
+    "crates/valhall-storage",
+]
+
+[workspace.package]
 version = "0.1.0"
+license = "MIT OR Apache-2.0"
 edition = "2021"
 
-[dependencies]
+[workspace.dependencies]
+valhall = { path = "crates/valhall" }
+valhall-docs = { path = "crates/valhall-docs" }
+valhall-index = { path = "crates/valhall-index" }
+valhall-storage = { path = "crates/valhall-storage" }
