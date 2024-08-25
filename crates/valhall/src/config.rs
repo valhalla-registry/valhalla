@@ -1,3 +1,5 @@
+#![allow(unused)] // FIXME: remove this whene functionality is implemented
+
 use std::{
     net::Ipv4Addr,
     path::{Path, PathBuf},
@@ -8,6 +10,9 @@ use serde::Deserialize;
 #[derive(Deserialize)]
 pub struct Config {
     pub server: ServerConfig,
+    pub index: IndexConfig,
+    pub storage: StorageConfig,
+    pub frontend: FrontendConfig,
 }
 
 impl Config {
@@ -21,5 +26,22 @@ impl Config {
 pub struct ServerConfig {
     pub ip: Ipv4Addr,
     pub port: u16,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct IndexConfig {
+    pub git: bool,
+    pub sparse: bool,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct StorageConfig {
+    #[serde(rename = "type")]
+    pub kind: String,
+    pub path: PathBuf,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct FrontendConfig {
     pub assets_dir: PathBuf,
 }

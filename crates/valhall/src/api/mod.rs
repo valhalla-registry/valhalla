@@ -3,19 +3,21 @@ use axum::{
     Router,
 };
 
+use crate::app::App;
+
 mod account;
 mod crates;
 mod index;
 
 /// creates the router for all api endpoints
-pub fn router() -> Router {
+pub fn router() -> Router<App> {
     Router::new()
         // account api
         .route("/account/login", post(account::login::handler))
         .route("/account/register", post(account::register::handler))
         // crates api
         .route("/crates", get(crates::search::handler))
-        .route("/crates/new", put(crates::publish::handler))
+        .route("/crates/new", put(crates::new::handler))
         // .route("/crates/suggest", get(handler))
         .route("/crates/:name", get(crates::info::handler))
         .route(

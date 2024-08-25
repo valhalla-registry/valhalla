@@ -1,8 +1,16 @@
 [server]
 ip = "0.0.0.0"
 port = 3000
-assets_dir = "assets"
 
-[docs]
-enabled = true
-theme = "gray"
+[storage]
+type = "disk"
+path = "storage"
+
+[index]
+git = true
+sparse = true
+
+[frontend]
+assets_dir = "assets"
+docs = { theme = "gray", auto-gen = true }
+auth = ["email", "github", "gitlab"]

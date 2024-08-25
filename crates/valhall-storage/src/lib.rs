@@ -1,14 +1,13 @@
-pub fn add(left: u64, right: u64) -> u64 {
-    left + right
+use std::path::PathBuf;
+
+#[derive(Debug, Clone)]
+pub struct Storage {
+    pub path: PathBuf,
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
+impl Storage {
+    pub fn store_crate(self, name: String, version: String, bytes: &[u8]) {
+        let path = self.path.join(format!("{}-{}.crate", name, version));
+        std::fs::write(path, bytes).unwrap();
     }
 }

@@ -4,9 +4,9 @@ version.workspace = true
 edition.workspace = true
 
 [dependencies]
-valhall-docs = { workspace = true }
-valhall-index = { workspace = true }
-valhall-storage = { workspace = true }
+# valhall-docs = { workspace = true }
+# valhall-index = { workspace = true }
+# valhall-storage = { workspace = true }
 
 axum = { version = "0.7.5" }
 serde = { version = "1", features = ["derive"] }
@@ -20,3 +20,6 @@ tower-http = { version = "0.5.2", features = ["trace", "fs"] }
 askama = { version = "0.12.1", features = ["with-axum"] }
 askama_axum = "0.4.0"
 http-body-util = "0.1.2"
+semver = { version = "1.0.23", features = ["serde"] }
+hashbrown = { version = "0.14.5", features = ["serde"] }
+anyhow = "1.0.86"
