@@ -1,8 +1,7 @@
 [package]
-name = "valhall-storage"
+name = "valhall-renderer"
 version.workspace = true
+license.workspace = true
 edition.workspace = true
 
 [dependencies]
-semver.workspace = true
-tracing.workspace = true

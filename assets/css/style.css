@@ -1,5 +1,8 @@
 :root {
-    font-family: Inter, sans-serif;
+    /* font-family: Inter, sans-serif; */
+    font-family:
+        Atkinson Hyperlegible,
+        sans-serif;
     font-feature-settings:
         "liga" 1,
         "calt" 1; /* fix for Chrome */
@@ -24,7 +27,7 @@ body {
     min-height: 100svh;
     display: flex;
     flex-direction: column;
-    background-color: #000;
+    background-color: #282828;
 }
 
 main {
@@ -57,7 +60,7 @@ input {
 .card {
     padding: 4px 6px;
     border: 1px solid #444;
-    border-radius: 2em;
+    border-radius: 8px;
 }
 
 .error {

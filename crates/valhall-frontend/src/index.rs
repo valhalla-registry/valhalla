@@ -1,8 +1,7 @@
 use askama::Template;
 use axum::extract::State;
-use valhall_storage::Crate;
 
-use crate::app::App;
+use crate::{app::App, storage::Crate};
 
 #[derive(Template)]
 #[template(path = "index.html")]

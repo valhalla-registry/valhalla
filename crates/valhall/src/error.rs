@@ -1,6 +1,6 @@
 use axum::{response::IntoResponse, Json};
 
-pub struct ApiError(anyhow::Error);
+pub struct ApiError(pub anyhow::Error);
 
 impl IntoResponse for ApiError {
     fn into_response(self) -> axum::response::Response {

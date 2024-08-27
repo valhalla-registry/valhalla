@@ -1,33 +1,23 @@
 use std::sync::Arc;
 
-use crate::{config::Config, index::Index, storage::Storage};
+use valhall_index::{git::GitIndex, Index};
+use valhall_storage::Storage;
+
+use crate::config::Config;
 
 pub type App = Arc<AppState>;
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct AppState {
     pub index: Index,
     pub storage: Storage,
 }
 
-impl Default for AppState {
-    fn default() -> Self {
-        Self {
-            index: Index::Git,
-            storage: Storage {
-                path: "./storage".into(),
-            },
-        }
-    }
-}
-
-impl From<Config> for AppState {
-    fn from(config: Config) -> Self {
-        Self {
-            index: Index::Git,
-            storage: Storage {
-                path: config.storage.path,
-            },
-        }
+impl From<&Config> for App {
+    fn from(config: &Config) -> Self {
+        Arc::new(AppState {
+            index: Index::Git(GitIndex::new(config.index.path.clone())),
+            storage: Storage::new(config.storage.path.clone()),
+        })
     }
 }

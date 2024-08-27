@@ -30,6 +30,7 @@ pub struct ServerConfig {
 
 #[derive(Debug, Deserialize)]
 pub struct IndexConfig {
+    pub path: PathBuf,
     pub git: bool,
     pub sparse: bool,
 }

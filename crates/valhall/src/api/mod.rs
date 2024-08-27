@@ -1,4 +1,5 @@
 use axum::{
+    extract::Path,
     routing::{delete, get, post, put},
     Router,
 };
@@ -36,7 +37,7 @@ pub fn router() -> Router<App> {
             get(crates::download::handler),
         )
         // index api
-        .route("/index", get(index::handler))
-        .route("/index/git", get(index::git::handler))
-        .route("/index/sparse", get(index::sparse::handler))
+        .route("/index/:path", get(index::handler))
+    // .route("/index/git", get(index::git::handler))
+    // .route("/index/sparse", get(index::sparse::handler))
 }

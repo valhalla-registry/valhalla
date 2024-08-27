@@ -4,13 +4,35 @@ port = 3000
 
 [storage]
 type = "disk"
-path = "storage"
+path = "./storage"
 
 [index]
+path = "./index"
 git = true
 sparse = true
+crates-io-proxy = true
+
+[index.whitelist]
+enabled = true
+crates = [
+    { name = "abc", version = ">1.0" },
+    { name = "test", version = "1.2, 1.4, >2.0" },
+    { name = "xyz", version = ">1.2, <=2.0" },
+]
+
+[index.blacklist]
+enabled = true
+crates = [
+    { name = "abc", version = ">1.0" },
+    { name = "test", version = "1.2, 1.4, >2.0" },
+    { name = "xyz", version = ">1.2, <=2.0" },
+]
 
 [frontend]
 assets_dir = "assets"
-docs = { theme = "gray", auto-gen = true }
 auth = ["email", "github", "gitlab"]
+
+[docs]
+auto-gen = true
+toolchains = ["stable", "nightly"]
+arch = ["x86-64", "aarch64"]

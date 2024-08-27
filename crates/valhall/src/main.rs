@@ -1,11 +1,9 @@
 mod api;
 mod app;
 mod config;
-mod docs;
 mod error;
 mod frontend;
-mod index;
-mod storage;
+mod models;
 
 use app::App;
 use axum::Router;
@@ -30,7 +28,7 @@ async fn main() {
     let app = Router::new()
         .nest("/", frontend::router(&config.frontend))
         .nest("/api/v1", api::router())
-        .with_state(App::default());
+        .with_state(App::from(&config));
 
     tracing::info!(
         "Starting listener on {}:{}",

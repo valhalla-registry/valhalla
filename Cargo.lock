@@ -991,19 +991,50 @@ dependencies = [
  "tower-http",
  "tracing",
  "tracing-subscriber",
+ "valhall-frontend",
+ "valhall-index",
+ "valhall-storage",
 ]
+
+[[package]]
+name = "valhall-backend"
+version = "0.1.0"
+
+[[package]]
+name = "valhall-config"
+version = "0.1.0"
 
 [[package]]
 name = "valhall-docs"
 version = "0.1.0"
 
 [[package]]
+name = "valhall-frontend"
+version = "0.1.0"
+
+[[package]]
 name = "valhall-index"
+version = "0.1.0"
+dependencies = [
+ "hashbrown",
+ "semver",
+ "serde",
+ "serde_json",
+ "thiserror",
+ "tracing",
+]
+
+[[package]]
+name = "valhall-renderer"
 version = "0.1.0"
 
 [[package]]
 name = "valhall-storage"
 version = "0.1.0"
+dependencies = [
+ "semver",
+ "tracing",
+]
 
 [[package]]
 name = "valuable"
