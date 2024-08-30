@@ -1,0 +1,11 @@
+{% extends "layouts/base.html" %}
+{% block title %}Search Results for '{{query}}'{% endblock%}
+{% block content %}
+<h1>Search Results for '{{query}}'</h1>
+{% for result in results %}
+    <div class="card">
+        <h2><a href="/crates/{{result.name}}">{{result.name}}</a> <span class="version">v{{result.version}}</span></h2>
+        <p>{{result.description}}</p>
+    </div>
+{% endfor %}
+{% endblock %}

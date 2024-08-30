@@ -1,0 +1,14 @@
+{% extends "layouts/base.html" %}
+{% block title %}Valhall Registry{% endblock%}
+{% block content %}
+<h1>Crates</h1>
+<div class="card">
+    <ul>
+        {% for krate in crates %}
+            <li>{{ krate.name }}</li>
+        {% endfor %}
+    </ul>
+    <button class="primary">Test</button>
+    <button class="secondary">Test</button>
+</div>
+{% endblock %}

@@ -1,7 +1,0 @@
-[package]
-name = "valhall-backend"
-version.workspace = true
-license.workspace = true
-edition.workspace = true
-
-[dependencies]

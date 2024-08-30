@@ -1,8 +1,0 @@
-[package]
-name = "valhall-storage"
-version.workspace = true
-edition.workspace = true
-
-[dependencies]
-semver.workspace = true
-tracing.workspace = true

@@ -1,0 +1,26 @@
+{% extends "layouts/base.html" %}
+{% block title %}{{ name }} - Valhall{% endblock%}
+{% block content %}
+<div class="crate">
+    <!-- basic information (name, version, description, tags) -->
+    <div class="card">
+        <div>
+            <span class="title">{{name}}</span>
+            <span class="version">{{version}}</span>
+        </div>
+        <p>{{description}}</p>
+    </div>
+    <!-- metadata, readme, versions, dependencies, dependents -->
+    <div class="container">
+        <div class="readme">{{ readme|safe }}</div>
+        <div class="card">
+            <h3>Owners</h3>
+            <h3>Categories</h3>
+        </div>
+    </div>
+    <!-- stats -->
+    <div class="stats">
+        <h2>Stats Overview</h2>
+    </div>
+</div>
+{% endblock %}
