@@ -1,4 +1,11 @@
-use crate::index::IndexTrait;
+use crate::{
+    auth::{
+        backend::{Scope, Token},
+        Auth,
+    },
+    index::IndexTrait,
+};
+use anyhow::anyhow;
 use axum::{
     extract::{Path, State},
     Json,
@@ -6,7 +13,7 @@ use axum::{
 use semver::Version;
 use serde::Serialize;
 
-use crate::{app::App, auth::Auth, error::ApiError};
+use crate::{app::App, error::ApiError};
 
 #[derive(Serialize)]
 pub struct YankReponse {
@@ -14,11 +21,25 @@ pub struct YankReponse {
 }
 
 pub async fn handler(
-    Auth(author): Auth,
+    Auth(token): Auth<Token>,
     State(app): State<App>,
     Path((name, version)): Path<(String, String)>,
 ) -> Result<Json<YankReponse>, ApiError> {
+    tracing::debug!("token: {:?}", token);
+    // check if the token contains the yank scope/permission
+    if !token.scopes.contains(Scope::YANK) {
+        return Err(ApiError(anyhow!(
+            "your api token does not contain the yank scope!"
+        )));
+    }
+
+    // TODO: check if the author is an owner of this crate
+
+    // TODO: check if crate (with version) exists
+
+    // yank the version of this crate on the index
     tracing::info!("Yanking crate '{} ({})'", name, version);
     app.index.yank_record(&name, Version::parse(&version)?)?;
+
     Ok(Json(YankReponse { ok: true }))
 }

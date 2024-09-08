@@ -5,10 +5,8 @@
 <div class="card">
     <ul>
         {% for krate in crates %}
-            <li>{{ krate.name }}</li>
+            <li><a href="/crates/{{ krate.name }}">{{ krate.name }} ({{ krate.version }})</a></li>
         {% endfor %}
     </ul>
-    <button class="primary">Test</button>
-    <button class="secondary">Test</button>
 </div>
 {% endblock %}

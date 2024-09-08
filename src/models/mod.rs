@@ -3,6 +3,12 @@ use semver::{Version, VersionReq};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
+#[derive(Debug)]
+pub struct Author {
+    pub id: String,
+    pub name: String,
+}
+
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CrateMetadata {
     pub name: String,

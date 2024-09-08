@@ -1,6 +1,11 @@
 {% extends "layouts/base.html" %}
 {% block title %}{{ name }} - Valhall{% endblock%}
 {% block content %}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
 <div class="crate">
     <!-- basic information (name, version, description, tags) -->
     <div class="card">
@@ -8,19 +13,44 @@
             <span class="title">{{name}}</span>
             <span class="version">{{version}}</span>
         </div>
+        <br>
         <p>{{description}}</p>
-    </div>
-    <!-- metadata, readme, versions, dependencies, dependents -->
-    <div class="container">
-        <div class="readme">{{ readme|safe }}</div>
-        <div class="card">
-            <h3>Owners</h3>
-            <h3>Categories</h3>
+        <br>
+        <div>
+            {% for tag in tags %}
+                <span class="tag">#{{tag}}</span>
+            {% endfor %}
         </div>
     </div>
-    <!-- stats -->
-    <div class="stats">
-        <h2>Stats Overview</h2>
+    <!-- tab navigation -->
+    <div class="tabs">
+        <ul class="tab-header">
+            <li>Readme</li>
+            <li>Versions</li>
+            <li>Dependencies</li>
+            <li>Dependents</li>
+            <li>Settings (only if user is author)</li>
+        </ul>
+        <div>
+            <!-- metadata, readme, versions, dependencies, dependents -->
+            <div class="container">
+                <div class="readme card">{{ readme|safe }}</div>
+                <div class="card">
+                    <h3>Owners</h3>
+                    <h3>Categories</h3>
+                </div>
+            </div>
+            <!-- stats -->
+            <div class="stats">
+                <h2>Stats Overview</h2>
+                <div class="card">
+                    <p>Some stats should be displayed here!</p>
+                    <p>Maybe number of download for each day?!</p>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+
+<script>hljs.highlightAll();</script>
 {% endblock %}

@@ -1,4 +1,11 @@
-use crate::index::IndexTrait;
+use crate::{
+    auth::{
+        backend::{Scope, Token},
+        Auth,
+    },
+    index::IndexTrait,
+};
+use anyhow::anyhow;
 use axum::{
     extract::{Path, State},
     Json,
@@ -14,9 +21,15 @@ pub struct UnyankResponse {
 }
 
 pub async fn handler(
+    Auth(token): Auth<Token>,
     State(app): State<App>,
     Path((name, version)): Path<(String, String)>,
 ) -> Result<Json<UnyankResponse>, ApiError> {
+    if !token.scopes.contains(Scope::YANK) {
+        return Err(ApiError(anyhow!(
+            "your api token does not contain the yank scope!"
+        )));
+    }
     tracing::info!("Unyanking crate '{} ({})'", name, version);
     app.index.unyank_record(&name, Version::parse(&version)?)?;
     Ok(Json(UnyankResponse { ok: true }))

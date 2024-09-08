@@ -6,7 +6,14 @@ use axum::{
 };
 use serde::{Deserialize, Serialize};
 
-use crate::{app::App, error::ApiError};
+use crate::{
+    app::App,
+    auth::{
+        backend::{Scope, Token},
+        Auth,
+    },
+    error::ApiError,
+};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct OwnersListResponse {
@@ -62,10 +69,19 @@ pub async fn get_handler(
 }
 
 pub async fn put_handler(
+    Auth(token): Auth<Token>,
     State(app): State<App>,
     Path(name): Path<String>,
     Json(body): Json<OwnerAddBody>,
 ) -> Result<Json<OwnerAddResponse>, (StatusCode, ApiError)> {
+    if !token.scopes.contains(Scope::CHANGE_OWNERS) {
+        return Err((
+            StatusCode::UNAUTHORIZED,
+            ApiError(anyhow!(
+                "your api token does not contain the change-owners scope!"
+            )),
+        ));
+    }
     tracing::info!("Adding owners to crate '{}': {:?}", name, body.users);
     Err((
         StatusCode::NOT_IMPLEMENTED,
@@ -82,10 +98,19 @@ pub async fn put_handler(
 }
 
 pub async fn delete_handler(
+    Auth(token): Auth<Token>,
     State(app): State<App>,
     Path(name): Path<String>,
     Json(body): Json<OwnerDeleteBody>,
 ) -> Result<Json<OwnerDeleteResponse>, (StatusCode, ApiError)> {
+    if !token.scopes.contains(Scope::CHANGE_OWNERS) {
+        return Err((
+            StatusCode::UNAUTHORIZED,
+            ApiError(anyhow!(
+                "your api token does not contain the change-owners scope!"
+            )),
+        ));
+    }
     tracing::info!("Removing owners from crate '{}': {:?}", name, body.users);
     Err((
         StatusCode::NOT_IMPLEMENTED,

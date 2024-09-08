@@ -1,4 +1,5 @@
 :root {
+    color-scheme: dark;
     /* font-family: Inter, sans-serif; */
     font-family:
         Atkinson Hyperlegible,
@@ -43,7 +44,7 @@ header {
     justify-content: center;
     width: 100%;
     margin-bottom: 2em;
-    border-bottom: 1px solid #444;
+    border-bottom: 2px solid #444;
 }
 
 nav {
@@ -75,7 +76,7 @@ nav {
 footer {
     text-align: center;
     margin-top: 2em;
-    border-top: 1px solid #444;
+    border-top: 2px solid #444;
     padding: 1em;
 }
 
@@ -123,7 +124,8 @@ button.secondary,
 
 .card {
     padding: 16px;
-    border: 1px solid #444;
+    /* border: 1px solid #444; */
+    border: 2px solid #444;
     border-radius: 8px;
 }
 
@@ -137,6 +139,9 @@ button.secondary,
         font-size: 20px;
         color: #aaa;
     }
+    .tag {
+        color: darkorange;
+    }
     .container {
         margin: 32px 0;
         display: grid;
@@ -145,7 +150,7 @@ button.secondary,
     }
     .readme {
         box-sizing: border-box;
-        background-color: #111;
+        /* background-color: #111; */
         border-radius: 8px;
         padding: 48px;
         img {
@@ -155,11 +160,47 @@ button.secondary,
         ol {
             margin-left: 1.75em;
         }
+
+        a {
+            color: darkorange;
+            text-decoration: none;
+
+            &:hover {
+                /* opacity: 0.8; */
+                color: orange;
+            }
+        }
+
+        /* line-height: 1.5em; */
+        h1,
+        h2,
+        h3,
+        h4 {
+            margin: 16px 0;
+        }
+
+        pre {
+            background-color: #111 !important;
+            padding: 10px 12px;
+            border-radius: 4px;
+            margin: 4px 0;
+        }
+
+        code {
+            background-color: #111;
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
         /* max-width: 75%; */
     }
 
     .sidebar {
     }
+}
+
+.none {
+    text-decoration: none;
+    list-style: none;
 }
 
 .error {

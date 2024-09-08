@@ -1,6 +1,13 @@
 use std::io::Cursor;
 
-use crate::index::{models::CrateVersion, IndexTrait};
+use crate::{
+    auth::{
+        backend::{Scope, Token},
+        Auth,
+    },
+    index::{models::CrateVersion, IndexTrait},
+};
+use anyhow::anyhow;
 use axum::{body::Bytes, extract::State, Json};
 use serde::{Deserialize, Serialize};
 use tokio::io::{AsyncReadExt, BufReader};
@@ -11,9 +18,16 @@ use crate::{app::App, error::ApiError, models::CrateMetadata};
 pub struct PublishResponse {}
 
 pub async fn handler(
+    Auth(token): Auth<Token>,
     State(state): State<App>,
     bytes: Bytes,
 ) -> Result<Json<PublishResponse>, ApiError> {
+    if !token.scopes.intersects(Scope::PUBLISH) {
+        return Err(ApiError(anyhow!(
+            "your api token does not contain the publish-new and publish-update scope!"
+        )));
+    }
+
     let mut reader = BufReader::new(Cursor::new(bytes));
 
     // extract metadata from the request body

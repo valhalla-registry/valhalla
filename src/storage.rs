@@ -9,6 +9,7 @@ pub struct Storage {
 
 pub struct Crate {
     pub name: String,
+    pub version: String,
 }
 
 impl Storage {
@@ -41,7 +42,10 @@ impl Storage {
                     .unwrap()
                     .to_owned()
             })
-            .map(|n| Crate { name: n })
+            .map(|n| Crate {
+                name: n,
+                version: "1.2.3-todo.1".into(),
+            })
             .collect()
     }
 
