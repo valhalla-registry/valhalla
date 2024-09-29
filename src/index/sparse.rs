@@ -1,6 +1,8 @@
-use semver::{Version, VersionReq};
+#![allow(unused)]
 
-use super::{error::Error, models::CrateVersion, IndexTrait};
+use super::{error::Error, IndexTrait};
+use crate::models::crates::CrateVersion;
+use semver::{Version, VersionReq};
 
 #[derive(Debug)]
 pub struct SparseIndex {}

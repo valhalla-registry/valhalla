@@ -13,5 +13,15 @@ pub async fn handler(
     tracing::info!("Download request for crate '{} ({})'", name, version);
 
     let crate_bytes = app.storage.get_crate(&name, Version::parse(&version)?)?;
+
+    // update download counter for the crate+version
+    sqlx::query(
+        "UPDATE crate_versions SET downloads = downloads + 1 WHERE name = $1 AND version = $2",
+    )
+    .bind(&name)
+    .bind(&version)
+    .execute(&app.db.pool)
+    .await?;
+
     Ok(Bytes::from(crate_bytes))
 }

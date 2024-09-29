@@ -5,7 +5,10 @@
 <div class="card">
     <ul>
         {% for krate in crates %}
-            <li><a href="/crates/{{ krate.name }}">{{ krate.name }} ({{ krate.version }})</a></li>
+            <li><a href="/crates/{{ krate.name }}">
+                {{ krate.name }}
+                {# ({{ krate.version }}) #}
+            </a></li>
         {% endfor %}
     </ul>
 </div>

@@ -1,7 +1,5 @@
-use crate::index::models::{CrateDependency, CrateVersion};
-use semver::{Version, VersionReq};
-use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
+pub mod account;
+pub mod crates;
 
 #[derive(Debug)]
 pub struct Author {
@@ -9,26 +7,26 @@ pub struct Author {
     pub name: String,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct CrateMetadata {
-    pub name: String,
-    pub vers: Version,
-    pub deps: Vec<CrateDependency>,
-    pub features: HashMap<String, Vec<String>>,
-    pub authors: Vec<String>,
-    pub description: Option<String>,
-    pub homepage: Option<String>,
-    pub documentation: Option<String>,
-    pub readme: Option<String>,
-    pub readme_file: Option<String>,
-    pub keywords: Option<Vec<String>>,
-    pub categories: Option<Vec<String>>,
-    pub license: Option<String>,
-    pub license_file: Option<String>,
-    pub repository: Option<String>,
-    pub badges: Option<HashMap<String, HashMap<String, String>>>,
-    pub links: Option<String>,
-}
+// #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+// pub struct CrateMetadata {
+//     pub name: String,
+//     pub vers: Version,
+//     pub deps: Vec<CrateDependency>,
+//     pub features: HashMap<String, Vec<String>>,
+//     pub authors: Vec<String>,
+//     pub description: Option<String>,
+//     pub homepage: Option<String>,
+//     pub documentation: Option<String>,
+//     pub readme: Option<String>,
+//     pub readme_file: Option<String>,
+//     pub keywords: Option<Vec<String>>,
+//     pub categories: Option<Vec<String>>,
+//     pub license: Option<String>,
+//     pub license_file: Option<String>,
+//     pub repository: Option<String>,
+//     pub badges: Option<HashMap<String, HashMap<String, String>>>,
+//     pub links: Option<String>,
+// }
 
 // #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 // pub struct CrateDependency {
@@ -54,17 +52,3 @@ pub struct CrateMetadata {
 //     /// A developement dependency.
 //     Dev,
 // }
-
-impl From<CrateMetadata> for CrateVersion {
-    fn from(value: CrateMetadata) -> Self {
-        Self {
-            name: value.name,
-            vers: value.vers,
-            deps: value.deps,
-            cksum: "FIXME".into(),
-            features: value.features,
-            yanked: None,
-            links: value.links,
-        }
-    }
-}

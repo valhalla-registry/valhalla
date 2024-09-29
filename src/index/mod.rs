@@ -1,6 +1,6 @@
+use crate::models::crates::CrateVersion;
 use error::Error;
 use git::GitIndex;
-use models::CrateVersion;
 use semver::{Version, VersionReq};
 use sparse::SparseIndex;
 
@@ -25,16 +25,20 @@ pub trait IndexTrait {
         F: FnOnce(&mut CrateVersion);
     /// Yanks a crate version.
     fn yank_record(&self, name: &str, version: Version) -> Result<(), Error> {
-        self.alter_record(name, version, |krate| krate.yanked = Some(true))
+        self.alter_record(name, version, |krate| krate.yanked = true)
     }
     /// Un-yanks a crate version.
     fn unyank_record(&self, name: &str, version: Version) -> Result<(), Error> {
-        self.alter_record(name, version, |krate| krate.yanked = Some(false))
+        self.alter_record(name, version, |krate| krate.yanked = false)
     }
 }
 
 #[derive(Debug)]
-pub enum Index {
+pub enum Index
+where
+    GitIndex: IndexTrait,
+    SparseIndex: IndexTrait,
+{
     Git(GitIndex),
     Sparse(SparseIndex),
 }

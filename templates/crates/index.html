@@ -14,8 +14,10 @@
             <span class="version">{{version}}</span>
         </div>
         <br>
-        <p>{{description}}</p>
-        <br>
+        {% if !description.is_empty() %}
+            <p>{{description}}</p>
+            <br>
+        {% endif %}
         <div>
             {% for tag in tags %}
                 <span class="tag">#{{tag}}</span>
@@ -25,27 +27,47 @@
     <!-- tab navigation -->
     <div class="tabs">
         <ul class="tab-header">
-            <li>Readme</li>
-            <li>Versions</li>
-            <li>Dependencies</li>
-            <li>Dependents</li>
-            <li>Settings (only if user is author)</li>
+            <li><a class="active" href="/crates/{{name}}">Readme</a></li>
+            <li><a href="/crates/{{name}}/versions">Versions</a></li>
+            <li><a href="/crates/{{name}}/{{version}}/dependencies">Dependencies</a></li>
+            <li><a href="/crates/{{name}}/{{version}}/dependents">Dependents</a></li>
+            <li><a href="/crates/{{name}}/settings">Settings (only if user is author)</a></li>
         </ul>
         <div>
             <!-- metadata, readme, versions, dependencies, dependents -->
             <div class="container">
                 <div class="readme card">{{ readme|safe }}</div>
                 <div class="card">
+                    {% if !documentation.is_empty() %}
+                        <h3>Documentation</h3>
+                        <a href="{{documentation}}">{{documentation}}</a>
+                    {% endif %}
+                    {% if !repository.is_empty() %}
+                    <h3>Repository</h3>
+                    <a href="{{repository}}">{{repository}}</a>
+                    {% endif %}
                     <h3>Owners</h3>
+                    <ul>
+                        {% for owner in owners %}
+                            <li>{{ owner }}</li>
+                        {% endfor %}
+                    </ul>
                     <h3>Categories</h3>
                 </div>
             </div>
             <!-- stats -->
             <div class="stats">
-                <h2>Stats Overview</h2>
+                <h2>Stats</h2>
                 <div class="card">
-                    <p>Some stats should be displayed here!</p>
-                    <p>Maybe number of download for each day?!</p>
+                    <h2>Overview</h2>
+                    <p>Downloads all time: {{ downloads }}</p>
+                    <p>Versions published {{ versions.len() }}</p>
+                    <h2>Downloads</h2>
+                    <ul>
+                        {% for version in versions %}
+                            <li>Version: {{ version.version }} | Downloads: {{ version.downloads }}</li>
+                        {% endfor %}
+                    </ul>
                 </div>
             </div>
         </div>

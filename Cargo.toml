@@ -10,18 +10,19 @@ serde_json = "1.0"
 semver = { version = "1.0", features = ["serde"] }
 thiserror = "1.0"
 tracing = "0.1.40"
-axum = { version = "0.7.5" }
-tokio = { version = "1.39.3", features = ["rt-multi-thread", "fs", "macros"] }
+axum = { version = "0.7.6" }
+tokio = { version = "1.40.0", features = ["rt-multi-thread", "fs", "macros"] }
 toml = "0.8.19"
 
-tracing-subscriber = "0.3.18"
-tower-http = { version = "0.5.2", features = ["trace", "fs"] }
+tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
+tower-http = { version = "0.6.1", features = ["trace", "fs"] }
 askama = { version = "0.12.1", features = ["with-axum"] }
 askama_axum = "0.4.0"
 http-body-util = "0.1.2"
-anyhow = "1.0.86"
-hex = "0.4.3"
+anyhow = "1.0"
+#hex = "0.4.3"
 sha256 = "1.5.0"
-pulldown-cmark = "0.12.0"
-sqlx = { version = "0.8.1", features = ["runtime-tokio", "sqlite"] }
+pulldown-cmark = "0.12.1"
+sqlx = { version = "0.8.2", features = ["runtime-tokio", "sqlite"] }
 bitflags = "2.6.0"
+chrono = "0.4.38"

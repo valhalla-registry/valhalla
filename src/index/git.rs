@@ -1,14 +1,14 @@
+use semver::{Version, VersionReq};
+use std::io::stderr;
 use std::{
     path::PathBuf,
     process::{Command, Stdio},
     sync::Mutex,
 };
 
-use semver::{Version, VersionReq};
-
+use super::{error::Error, IndexTrait};
 use crate::index::tree::Tree;
-
-use super::{error::Error, models::CrateVersion, IndexTrait};
+use crate::models::crates::CrateVersion;
 
 #[derive(Debug)]
 pub struct GitIndex {
@@ -31,14 +31,18 @@ impl GitIndex {
 
 impl IndexTrait for GitIndex {
     fn add_record(&self, record: CrateVersion) -> Result<(), Error> {
-        tracing::debug!("adding record for crate {} ({})", record.name, record.vers);
+        tracing::debug!(
+            "adding record for crate {} ({})",
+            record.name,
+            record.version
+        );
         let _lock = self.lock.lock();
         // step 0: aquire the lock to block other threads
         //         to commit / push at the same time
         // step 1: create file
         // step 2: commit and push change
-
-        let msg = format!("added crate {} ({:?})", record.name, record.vers);
+        let msg = format!("added crate {} ({:?})", record.name, record.version);
+        tracing::debug!(index_msg =? msg);
         self.tree.add_record(record)?;
         self.repo.commit_and_push(&msg)?;
         Ok(())
@@ -75,7 +79,8 @@ impl Repository {
             .arg("remote")
             .arg("get-url")
             .arg("origin")
-            .stdout(Stdio::piped())
+            .stdout(Stdio::null())
+            .stderr(Stdio::piped())
             .current_dir(self.path.canonicalize()?)
             .output()?;
 
@@ -86,6 +91,8 @@ impl Repository {
         Command::new("git")
             .arg("pull")
             .arg("--ff-only")
+            .stdout(Stdio::null())
+            .stderr(Stdio::piped())
             .current_dir(self.path.canonicalize()?)
             .spawn()?
             .wait()?;
@@ -97,6 +104,8 @@ impl Repository {
         Command::new("git")
             .arg("add")
             .arg("--all")
+            .stdout(Stdio::null())
+            .stderr(Stdio::piped())
             .current_dir(&self.path)
             .spawn()?
             .wait()?;
@@ -104,6 +113,8 @@ impl Repository {
             .arg("commit")
             .arg("-m")
             .arg(msg)
+            .stdout(Stdio::null())
+            .stderr(Stdio::piped())
             .current_dir(&self.path)
             .spawn()?
             .wait()?;
@@ -111,6 +122,8 @@ impl Repository {
             .arg("push")
             .arg("origin")
             .arg("main")
+            .stdout(Stdio::null())
+            .stderr(Stdio::piped())
             .current_dir(&self.path)
             .spawn()?
             .wait()?;

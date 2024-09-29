@@ -3,11 +3,10 @@ use std::io;
 use std::io::{BufRead, Write};
 use std::path::PathBuf;
 
-use semver::{Version, VersionReq};
-
 use super::error::IndexError;
-use super::models::CrateVersion;
 use super::Error;
+use crate::models::crates::CrateVersion;
+use semver::{Version, VersionReq};
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Tree {
@@ -21,10 +20,10 @@ impl Tree {
 
     fn compute_record_path(&self, name: &str) -> PathBuf {
         match name.len() {
-            1 => self.path.join("1").join(&name),
-            2 => self.path.join("2").join(&name),
-            3 => self.path.join("3").join(&name[..1]).join(&name),
-            _ => self.path.join(&name[0..2]).join(&name[2..4]).join(&name),
+            1 => self.path.join("1").join(name),
+            2 => self.path.join("2").join(name),
+            3 => self.path.join("3").join(&name[..1]).join(name),
+            _ => self.path.join(&name[0..2]).join(&name[2..4]).join(name),
         }
     }
 
@@ -40,8 +39,8 @@ impl Tree {
         let found = io::BufReader::new(file)
             .lines()
             .filter_map(|line| serde_json::from_str::<CrateVersion>(line.ok()?.as_str()).ok())
-            .filter(|krate| req.matches(&krate.vers))
-            .max_by(|k1, k2| k1.vers.cmp(&k2.vers));
+            .filter(|krate| req.matches(&krate.version))
+            .max_by(|k1, k2| k1.version.cmp(&k2.version));
 
         Ok(found.ok_or_else(|| IndexError::CrateNotFound {
             name: String::from(name),
@@ -61,7 +60,7 @@ impl Tree {
         let records = self.all_records(name)?;
         Ok(records
             .into_iter()
-            .max_by(|k1, k2| k1.vers.cmp(&k2.vers))
+            .max_by(|k1, k2| k1.version.cmp(&k2.version))
             .expect("at least one version should exist"))
     }
 
@@ -74,7 +73,6 @@ impl Tree {
         }
 
         let mut file = fs::OpenOptions::new()
-            .write(true)
             .append(true)
             .create(true)
             .open(path)?;
@@ -106,7 +104,7 @@ impl Tree {
         };
         let found = krates
             .iter_mut()
-            .find(|krate| krate.vers == version)
+            .find(|krate| krate.version == version)
             .ok_or_else(|| {
                 Error::from(IndexError::CrateNotFound {
                     name: String::from(name),

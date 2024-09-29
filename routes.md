@@ -12,7 +12,9 @@ GET /crates/:crate/docs/:version
 
 GET /account/login
 GET /account/register
-GET /account/manage
+GET /account/dashboard
+GET /account/profile (settings)
+GET /account/tokens  (settings)
 
 GET /assets
 ```

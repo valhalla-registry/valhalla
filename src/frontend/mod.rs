@@ -5,6 +5,7 @@ use crate::{app::App, config::FrontendConfig};
 
 mod account;
 mod crates;
+mod docs;
 mod index;
 mod search;
 
@@ -19,6 +20,11 @@ pub fn router(config: &FrontendConfig) -> Router<App> {
         .route("/me", get(|| async { Redirect::to("/account/token") }))
         // crate routes
         .route("/crates/:name", get(crates::handler))
+        .route("/crates/:name/versions", get(crates::versions_handler))
+        .route("/crates/:name/:version/dependencies", get(|| async {}))
+        .route("/crates/:name/:version/dependents", get(|| async {}))
+        // docs
+        // .route("/docs/:name/:version", )
         // search
         .route("/search", get(search::handler))
         // static files

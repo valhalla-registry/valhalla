@@ -1,0 +1,36 @@
+{% extends "layouts/base.html" %}
+{% block title %}{{ name }} - Valhall{% endblock%}
+{% block content %}
+
+<div class="crate">
+    <!-- basic information (name, version, description, tags) -->
+    <div class="card">
+        <div>
+            <span class="title">{{name}}</span>
+        </div>
+        <br>
+        {% if !description.is_empty() %}
+            <p>{{description}}</p>
+            <br>
+        {% endif %}
+        {#<div>
+            {% for tag in tags %}
+            <span class="tag">#{{tag}}</span>
+            {% endfor %}
+        </div>#}
+    </div>
+    <!-- tab navigation -->
+    <div class="tabs">
+        <ul class="tab-header">
+            <li><a href="/crates/{{name}}">Readme</a></li>
+            <li><a class="active" href="/crates/{{name}}/versions">Versions</a></li>
+            <li><a href="/crates/{{name}}/{{latest_version}}/dependencies">Dependencies</a></li>
+            <li><a href="/crates/{{name}}/{{latest_version}}/dependents">Dependents</a></li>
+            <li><a href="/crates/{{name}}/settings">Settings (only if user is author)</a></li>
+        </ul>
+        <div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

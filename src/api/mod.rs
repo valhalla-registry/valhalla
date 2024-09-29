@@ -7,6 +7,7 @@ use crate::app::App;
 
 mod account;
 mod crates;
+mod error;
 mod index;
 
 /// creates the router for all api endpoints

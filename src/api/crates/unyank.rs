@@ -25,7 +25,7 @@ pub async fn handler(
     State(app): State<App>,
     Path((name, version)): Path<(String, String)>,
 ) -> Result<Json<UnyankResponse>, ApiError> {
-    if !token.scopes.contains(Scope::YANK) {
+    if !token.scope.contains(Scope::YANK) {
         return Err(ApiError(anyhow!(
             "your api token does not contain the yank scope!"
         )));

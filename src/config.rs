@@ -1,4 +1,4 @@
-#![allow(unused)] // FIXME: remove this whene functionality is implemented
+#![allow(unused)] // FIXME: remove this when functionality is implemented
 
 use std::{
     net::Ipv4Addr,
@@ -26,6 +26,7 @@ impl Config {
 pub struct ServerConfig {
     pub ip: Ipv4Addr,
     pub port: u16,
+    pub db: String,
 }
 
 #[derive(Debug, Deserialize)]

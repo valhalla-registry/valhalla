@@ -27,7 +27,7 @@ pub async fn handler(
 ) -> Result<Json<YankReponse>, ApiError> {
     tracing::debug!("token: {:?}", token);
     // check if the token contains the yank scope/permission
-    if !token.scopes.contains(Scope::YANK) {
+    if !token.scope.contains(Scope::YANK) {
         return Err(ApiError(anyhow!(
             "your api token does not contain the yank scope!"
         )));

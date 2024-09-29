@@ -1,7 +1,9 @@
+use crate::app::App;
 use askama::Template;
 use axum::extract::{Path, State};
-
-use crate::app::App;
+use axum::http::StatusCode;
+use semver::Version;
+use sqlx::FromRow;
 
 #[derive(Template)]
 #[template(path = "crates/index.html")]
@@ -9,24 +11,125 @@ pub(crate) struct IndexTemplate {
     /// the name of the crate
     pub name: String,
     pub version: String,
+    pub versions: Vec<CrateVersion>,
+    pub downloads: u64,
     pub description: String,
+    pub documentation: String,
+    pub repository: String,
     pub tags: Vec<String>,
+    pub owners: Vec<String>,
     pub readme: String,
 }
 
-pub async fn handler(State(_app): State<App>, Path(name): Path<String>) -> IndexTemplate {
+#[derive(Debug, FromRow)]
+pub struct CrateVersion {
+    pub name: String,
+    pub version: String,
+    pub downloads: u64,
+    pub created_at: u64,
+}
+
+#[derive(Debug, FromRow)]
+pub struct Crate {
+    pub id: i64,
+    pub name: String,
+    pub description: String,
+    pub documentation: String,
+    pub repository: String,
+}
+
+pub async fn handler(
+    State(state): State<App>,
+    Path(name): Path<String>,
+) -> Result<IndexTemplate, StatusCode> {
+    let krate: Crate = sqlx::query_as("SELECT * FROM crates WHERE name = $1")
+        .bind(&name)
+        .fetch_optional(&state.db.pool)
+        .await
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?
+        .ok_or(StatusCode::INTERNAL_SERVER_ERROR)?;
+
+    let versions: Vec<CrateVersion> =
+        sqlx::query_as("SELECT * FROM crate_versions WHERE name = $1")
+            .bind(&name)
+            .fetch_all(&state.db.pool)
+            .await
+            .unwrap(); // FIXME
+
+    let owners: Vec<String> = sqlx::query_scalar(
+        "SELECT name FROM users WHERE id IN (SELECT user_id FROM crate_owners WHERE crate_id = $1)",
+    )
+    .bind(&krate.id)
+    .fetch_all(&state.db.pool)
+    .await
+    .unwrap();
+
+    let downloads = versions.iter().map(|v| v.downloads).sum::<u64>();
+
+    let latest = versions
+        .iter()
+        .filter_map(|v| Version::parse(&v.version).ok())
+        .max_by(|a, b| a.cmp(b))
+        .unwrap();
+
     let parser = pulldown_cmark::Parser::new(README);
 
     // Write to a new String buffer.
     let mut html_output = String::new();
     pulldown_cmark::html::push_html(&mut html_output, parser);
-    IndexTemplate {
+    Ok(IndexTemplate {
         name,
-        version: "1.2.3-abc.1".into(),
-        description: "example description / not real!".into(),
+        version: latest.to_string(),
+        versions,
+        downloads,
+        documentation: krate.documentation,
+        repository: krate.repository,
+        description: krate.description,
         tags: vec!["test".into(), "crate".into(), "not-real".into()],
+        owners,
         readme: html_output,
-    }
+    })
+}
+
+#[derive(Template)]
+#[template(path = "crates/versions.html")]
+pub struct CrateVersionTemplate {
+    pub name: String,
+    pub versions: Vec<CrateVersion>,
+    pub latest_version: String,
+    pub description: String,
+}
+
+pub async fn versions_handler(
+    Path(name): Path<String>,
+    State(state): State<App>,
+) -> Result<CrateVersionTemplate, StatusCode> {
+    let krate: Crate = sqlx::query_as("SELECT * FROM crates WHERE name = $1")
+        .bind(&name)
+        .fetch_optional(&state.db.pool)
+        .await
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?
+        .ok_or(StatusCode::INTERNAL_SERVER_ERROR)?;
+
+    let versions: Vec<CrateVersion> =
+        sqlx::query_as("SELECT * FROM crate_versions WHERE name = $1")
+            .bind(&name)
+            .fetch_all(&state.db.pool)
+            .await
+            .unwrap();
+
+    let latest = versions
+        .iter()
+        .filter_map(|v| Version::parse(&v.version).ok())
+        .max_by(|a, b| a.cmp(b))
+        .unwrap();
+
+    Ok(CrateVersionTemplate {
+        name,
+        versions,
+        latest_version: latest.to_string(),
+        description: krate.description,
+    })
 }
 
 const README: &str = r##"# Serde &emsp; [![Build Status]][actions] [![Latest Version]][crates.io] [![serde msrv]][Rust 1.31] [![serde_derive msrv]][Rust 1.56]
