@@ -33,13 +33,31 @@ pub async fn handler(
         )));
     }
 
-    // TODO: check if the author is an owner of this crate
+    let crate_id: i64 = sqlx::query_scalar("SELECT id FROM crates WHERE name = ?")
+        .bind(&name)
+        .fetch_optional(&app.db.pool)
+        .await?
+        .ok_or(ApiError(anyhow!("crate does not exist!")))?;
 
-    // TODO: check if crate (with version) exists
+    // TODO: check if the author is an owner of this crate
+    let is_owner: bool = sqlx::query_scalar("SELECT COUNT(1) FROM crate_owners WHERE user_id = ? AND crate_id = ?")
+        .bind(&token.user_id)
+        .bind(crate_id)
+        .fetch_one(&app.db.pool)
+        .await?;
+
+    tracing::debug!("is owner: {}", is_owner);
+
+    let version = version.parse::<Version>()?;
+
+    // Check if crate (with version) exists.
+    // This method returns Err if the record does not exist
+    // and then does an early return from this function.
+    // app.index.match_record(&name, version.clone().into())?;
 
     // yank the version of this crate on the index
     tracing::info!("Yanking crate '{} ({})'", name, version);
-    app.index.yank_record(&name, Version::parse(&version)?)?;
+    app.index.yank_record(&name, version)?;
 
     Ok(Json(YankReponse { ok: true }))
 }

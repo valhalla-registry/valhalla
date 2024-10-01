@@ -6,7 +6,7 @@ use axum::{
 };
 use bitflags::bitflags;
 use sqlx::sqlite::SqliteRow;
-use sqlx::{Decode, FromRow, Row, Type};
+use sqlx::{FromRow, Row};
 use std::fmt::Display;
 
 bitflags! {

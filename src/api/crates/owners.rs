@@ -8,9 +8,9 @@ use crate::{
 };
 use anyhow::anyhow;
 use axum::extract::State;
-use axum::{extract::Path, http::StatusCode, Json};
+use axum::{extract::Path, Json};
 use serde::{Deserialize, Serialize};
-use sqlx::{FromRow, Pool, SqlitePool};
+use sqlx::{FromRow, SqlitePool};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct OwnersListResponse {

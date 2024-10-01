@@ -1,6 +1,5 @@
 use crate::config::Config;
 use crate::error::Result;
-use sqlx::migrate::Migrator;
 use sqlx::sqlite::{SqliteConnectOptions, SqlitePoolOptions};
 use sqlx::SqlitePool;
 use std::str::FromStr;
