@@ -1,9 +1,6 @@
-use crate::{
-    auth::{
-        backend::{Scope, Token},
-        Auth,
-    },
-    index::IndexTrait,
+use crate::auth::{
+    backend::{Scope, Token},
+    Auth,
 };
 use anyhow::anyhow;
 use axum::{
@@ -12,6 +9,7 @@ use axum::{
 };
 use semver::Version;
 use serde::Serialize;
+use valhall_index::IndexTrait;
 
 use crate::{app::App, error::ApiError};
 
@@ -40,11 +38,12 @@ pub async fn handler(
         .ok_or(ApiError(anyhow!("crate does not exist!")))?;
 
     // TODO: check if the author is an owner of this crate
-    let is_owner: bool = sqlx::query_scalar("SELECT COUNT(1) FROM crate_owners WHERE user_id = ? AND crate_id = ?")
-        .bind(&token.user_id)
-        .bind(crate_id)
-        .fetch_one(&app.db.pool)
-        .await?;
+    let is_owner: bool =
+        sqlx::query_scalar("SELECT COUNT(1) FROM crate_owners WHERE user_id = ? AND crate_id = ?")
+            .bind(&token.user_id)
+            .bind(crate_id)
+            .fetch_one(&app.db.pool)
+            .await?;
 
     tracing::debug!("is owner: {}", is_owner);
 

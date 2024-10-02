@@ -2066,6 +2066,48 @@ dependencies = [
  "tower-http",
  "tracing",
  "tracing-subscriber",
+ "valhall_config",
+ "valhall_index",
+ "valhall_models",
+ "valhall_storage",
+]
+
+[[package]]
+name = "valhall_config"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "toml",
+]
+
+[[package]]
+name = "valhall_docs"
+version = "0.1.0"
+
+[[package]]
+name = "valhall_index"
+version = "0.1.0"
+dependencies = [
+ "semver",
+ "serde_json",
+ "thiserror",
+ "tracing",
+ "valhall_models",
+]
+
+[[package]]
+name = "valhall_models"
+version = "0.1.0"
+dependencies = [
+ "semver",
+ "serde",
+]
+
+[[package]]
+name = "valhall_storage"
+version = "0.1.0"
+dependencies = [
+ "semver",
 ]
 
 [[package]]

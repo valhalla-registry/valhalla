@@ -1,7 +1,6 @@
 use axum::{body::Bytes, extract::State, Json};
 use semver::VersionReq;
 use serde::{Deserialize, Serialize};
-use sqlx::{Sqlite, Transaction};
 use std::io::Cursor;
 use tokio::io::{AsyncReadExt, BufReader};
 
@@ -12,9 +11,9 @@ use crate::{
         backend::{Scope, Token},
         Auth,
     },
-    index::IndexTrait,
-    models::crates::{CrateMetadata, CrateVersion},
 };
+use valhall_index::IndexTrait;
+use valhall_models::crates::{CrateMetadata, CrateVersion};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PublishResponse {}
@@ -50,20 +49,16 @@ pub async fn handler(
         metadata.version
     );
 
-    // Create a database transaction: if any of the following steps
-    // fail, the crate publishing is aborted completely, without
-    // changing any database entries.
-    let mut transaction = state.db.pool.begin().await?;
-
+    // get the id of the crate (Some(_) if it already exists, otherwise None)
     let crate_id: Option<i64> = sqlx::query_scalar("SELECT id FROM crates WHERE name = $1")
         .bind(&metadata.name)
-        .fetch_optional(&mut *transaction)
+        .fetch_optional(&state.db.pool)
         .await?;
 
     match crate_id {
         Some(id) if token.scope.contains(Scope::PUBLISH_UPDATE) => {
             // crate exists, token has correct scope
-            publish_update(&mut transaction, &state, &token, id, &metadata, crate_bytes).await?;
+            publish_update(&state, &token, id, &metadata, crate_bytes).await?;
         }
         Some(_) => {
             // crate exists, token has wrong scope
@@ -72,7 +67,7 @@ pub async fn handler(
         }
         None if token.scope.contains(Scope::PUBLISH_NEW) => {
             // crate does not exist, token has correct scope
-            publish_new(&mut transaction, &state, &token, &metadata, crate_bytes).await?;
+            publish_new(&state, &token, &metadata, crate_bytes).await?;
         }
         None => {
             // crate does not exist, token has wrong scope
@@ -81,22 +76,11 @@ pub async fn handler(
         }
     }
 
-    // Insert a version entry for the crate (regardless if it is new or an update)
-    sqlx::query("INSERT INTO crate_versions (name, version, created_at) VALUES ($1, $2, $3)")
-        .bind(&metadata.name)
-        .bind(&metadata.version.to_string())
-        .bind(chrono::Utc::now().timestamp())
-        .execute(&mut *transaction)
-        .await?;
-
-    transaction.commit().await?;
-
     Ok(Json(PublishResponse {}))
 }
 
 /// Publish a new crate
 async fn publish_new(
-    mut transaction: &mut Transaction<'_, Sqlite>,
     // The App-State
     state: &App,
     // The API token
@@ -121,45 +105,41 @@ async fn publish_new(
     record.checksum = sha256::digest(&crate_bytes);
     state.index.add_record(record).unwrap(); // FIXME: remove unwrap
 
+    let mut tx = state.db.pool.begin().await?;
+
     // create crate entry
-    // FIXME: get id with `RETURNING`
-    let _ = sqlx::query(
-        "INSERT INTO crates (name, description, documentation, repository) VALUES ($1, $2, $3, $4)",
+    let crate_id: i64 = sqlx::query_scalar(
+        "INSERT INTO crates (name, description, documentation, repository) VALUES ($1, $2, $3, $4) RETURNING id",
     )
     .bind(&metadata.name)
     .bind(&metadata.description)
     .bind(&metadata.documentation)
     .bind(&metadata.repository)
-    .execute(&mut *transaction)
+    .fetch_one(&mut *tx)
     .await?;
-
-    // get id of newly created entry
-    let id: Option<i64> = sqlx::query_scalar("SELECT id FROM crates WHERE name = $1")
-        .bind(&metadata.name)
-        .fetch_optional(&mut *transaction)
-        .await?;
-
-    // if the previous query returned none, rollback the transaction and return an error
-    let Some(crate_id) = id else {
-        // transaction.rollback().await?;
-        // TODO: delete crate from disk + remove index record
-        // return Err(ApiError(anyhow!("internal database error")));
-        return Err(ApiError2::Other("internal database error".into()));
-    };
 
     // insert user as an owner for this new crate
     let _ = sqlx::query("INSERT INTO crate_owners (user_id, crate_id) VALUES ($1, $2)")
         .bind(&token.user_id)
         .bind(&crate_id)
-        .execute(&mut *transaction)
+        .execute(&mut *tx)
         .await?;
+
+    // Insert a version entry for the crate (regardless if it is new or an update)
+    sqlx::query("INSERT INTO crate_versions (name, version, created_at) VALUES ($1, $2, $3)")
+        .bind(&metadata.name)
+        .bind(&metadata.version.to_string())
+        .bind(chrono::Utc::now().timestamp())
+        .execute(&mut *tx)
+        .await?;
+
+    tx.commit().await?;
 
     Ok(())
 }
 
 /// Publish a new version of a crate
 async fn publish_update(
-    transaction: &mut Transaction<Sqlite>,
     // The App-State
     state: &App,
     // The API token
@@ -181,7 +161,7 @@ async fn publish_update(
     let owners: Vec<i64> =
         sqlx::query_scalar("SELECT user_id FROM crate_owners WHERE crate_id = $1")
             .bind(crate_id)
-            .fetch_all(&mut *transaction)
+            .fetch_all(&state.db.pool)
             .await?;
 
     if !owners.contains(&token.user_id) {
@@ -208,11 +188,20 @@ async fn publish_update(
         .storage
         .store_crate(&metadata.name, &metadata.version, &crate_bytes)?;
 
+    // TODO: render + store readme on the disk
+
     // create index record for the new crate
     let mut record: CrateVersion = metadata.clone().into(); // FIXME
     record.checksum = sha256::digest(&crate_bytes);
     state.index.add_record(record).unwrap(); // FIXME: remove unwrap
 
-    // TODO: add version entry for crate in database
+    // Insert a version entry for the crate (regardless if it is new or an update)
+    sqlx::query("INSERT INTO crate_versions (name, version, created_at) VALUES ($1, $2, $3)")
+        .bind(&metadata.name)
+        .bind(&metadata.version.to_string())
+        .bind(chrono::Utc::now().timestamp())
+        .execute(&state.db.pool)
+        .await?;
+
     Ok(())
 }

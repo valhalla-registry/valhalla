@@ -1,0 +1,8 @@
+[package]
+name = "valhall_models"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+serde.workspace = true
+semver.workspace = true

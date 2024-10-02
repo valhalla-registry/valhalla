@@ -1,8 +1,8 @@
-use crate::config::Config;
 use crate::error::Result;
 use sqlx::sqlite::{SqliteConnectOptions, SqlitePoolOptions};
 use sqlx::SqlitePool;
 use std::str::FromStr;
+use valhall_config::Config;
 
 #[derive(Debug)]
 pub struct Database {

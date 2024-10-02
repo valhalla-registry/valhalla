@@ -6,8 +6,8 @@ use std::{
 };
 
 use super::{error::Error, IndexTrait};
-use crate::index::tree::Tree;
-use crate::models::crates::CrateVersion;
+use crate::tree::Tree;
+use valhall_models::crates::CrateVersion;
 
 #[derive(Debug)]
 pub struct GitIndex {

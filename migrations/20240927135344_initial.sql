@@ -14,9 +14,10 @@ create table if not exists crates (
 create table if not exists crate_versions (
     `id` integer primary key autoincrement,
     `name` varchar(255) not null,
-    `version` varchar(127) not null unique,
+    `version` varchar(127) not null,
     `downloads` bigint not null default 0,
-    `created_at` integer not null
+    `created_at` integer not null,
+    UNIQUE (`name`, `version`)
 );
 
 -- user accounts

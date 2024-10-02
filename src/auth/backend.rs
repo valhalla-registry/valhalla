@@ -41,6 +41,7 @@ impl Display for Scope {
 }
 
 #[derive(Debug)]
+#[allow(unused)]
 pub(crate) struct Token {
     id: u64,
     token: String,

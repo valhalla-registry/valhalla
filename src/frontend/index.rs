@@ -1,5 +1,5 @@
 use crate::app::App;
-use askama::{DynTemplate, Template};
+use askama::Template;
 use axum::extract::State;
 use sqlx::FromRow;
 
@@ -9,6 +9,7 @@ pub(crate) struct IndexTemplate {
     pub(crate) crates: Vec<Crate>,
 }
 
+#[allow(unused)]
 #[derive(Debug, FromRow)]
 pub struct Crate {
     pub id: i64,

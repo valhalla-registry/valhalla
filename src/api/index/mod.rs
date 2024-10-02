@@ -3,9 +3,6 @@ use axum::extract::Path;
 
 use crate::error::ApiError;
 
-pub(crate) mod git;
-pub(crate) mod sparse;
-
 pub async fn handler(Path(path): Path<String>) -> Result<&'static str, ApiError> {
     tracing::info!("index: {}", path);
 

@@ -1,7 +1,8 @@
 use axum::{response::Redirect, routing::get, Router};
 use tower_http::services::ServeDir;
 
-use crate::{app::App, config::FrontendConfig};
+use crate::app::App;
+use valhall_config::FrontendConfig;
 
 mod account;
 mod crates;
@@ -24,7 +25,7 @@ pub fn router(config: &FrontendConfig) -> Router<App> {
         .route("/crates/:name/:version/dependencies", get(|| async {}))
         .route("/crates/:name/:version/dependents", get(|| async {}))
         // docs
-        // .route("/docs/:name/:version", )
+        .route("/docs", get(docs::index))
         // search
         .route("/search", get(search::handler))
         // static files

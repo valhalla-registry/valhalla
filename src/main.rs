@@ -2,11 +2,11 @@ use axum::Router;
 use std::sync::Arc;
 use tokio::net::TcpListener;
 use tower_http::trace::TraceLayer;
-use tracing::Level;
 use tracing_subscriber::layer::SubscriberExt;
 use tracing_subscriber::util::SubscriberInitExt;
 use valhall::app::AppState;
-use valhall::{api, config::Config, frontend, APP_NAME, APP_VERSION};
+use valhall::{api, frontend, APP_NAME, APP_VERSION};
+use valhall_config::Config;
 
 #[tokio::main]
 async fn main() {
@@ -19,7 +19,7 @@ async fn main() {
         .with(tracing_subscriber::fmt::layer())
         .init();
 
-    tracing::info!("Starting {} (Version: {})", APP_NAME, APP_VERSION);
+    tracing::info!("Starting {} (v{})", APP_NAME, APP_VERSION);
 
     let config = Config::load("valhall.toml");
 

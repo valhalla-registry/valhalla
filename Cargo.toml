@@ -1,3 +1,24 @@
+[workspace]
+members = [".", "crates/*"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+
+[workspace.dependencies]
+valhall_index = { path = "crates/valhall_index" }
+valhall_storage = { path = "crates/valhall_storage" }
+valhall_models = { path = "crates/valhall_models" }
+valhall_config = { path = "crates/valhall_config" }
+valhall_docs = { path = "crates/valhall_docs" }
+
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+semver = { version = "1.0", features = ["serde"] }
+thiserror = "1.0"
+tracing = "0.1.40"
+toml = "0.8.19"
+
 [package]
 name = "valhall"
 version = "0.1.0"
@@ -20,9 +41,13 @@ askama = { version = "0.12.1", features = ["with-axum"] }
 askama_axum = "0.4.0"
 http-body-util = "0.1.2"
 anyhow = "1.0"
-#hex = "0.4.3"
 sha256 = "1.5.0"
 pulldown-cmark = "0.12.1"
 sqlx = { version = "0.8.2", features = ["runtime-tokio", "sqlite"] }
 bitflags = "2.6.0"
 chrono = "0.4.38"
+
+valhall_index.workspace = true
+valhall_storage.workspace = true
+valhall_models.workspace = true
+valhall_config.workspace = true

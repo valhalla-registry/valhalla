@@ -35,6 +35,12 @@ pub enum ApiError2 {
         available: Version,
     },
 
+    #[error("This version ({0}) does already exist!")]
+    VersionAlreadyExists(Version),
+
+    #[error("The crate could not be published. Try again!")]
+    UnableToPublish,
+
     /// Wildcard error: remove for production
     #[error("Other error: {0}")]
     Other(String),
@@ -42,6 +48,7 @@ pub enum ApiError2 {
 
 impl IntoResponse for ApiError2 {
     fn into_response(self) -> Response {
+        tracing::debug!("API ERROR: {:?}", self);
         Json(serde_json::json!({
             "errors": [{
                 "detail": self.to_string()

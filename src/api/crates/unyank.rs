@@ -1,9 +1,6 @@
-use crate::{
-    auth::{
-        backend::{Scope, Token},
-        Auth,
-    },
-    index::IndexTrait,
+use crate::auth::{
+    backend::{Scope, Token},
+    Auth,
 };
 use anyhow::anyhow;
 use axum::{
@@ -12,6 +9,7 @@ use axum::{
 };
 use semver::Version;
 use serde::Serialize;
+use valhall_index::IndexTrait;
 
 use crate::{app::App, error::ApiError};
 

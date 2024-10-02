@@ -1,0 +1,12 @@
+[package]
+name = "valhall_index"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+semver.workspace = true
+tracing.workspace = true
+thiserror.workspace = true
+serde_json.workspace = true
+
+valhall_models.workspace = true

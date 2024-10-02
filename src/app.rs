@@ -1,8 +1,8 @@
-use crate::config::Config;
 use crate::db::Database;
-use crate::index::{git::GitIndex, Index};
-use crate::storage::Storage;
 use std::sync::Arc;
+use valhall_config::Config;
+use valhall_index::{git::GitIndex, Index};
+use valhall_storage::Storage;
 
 pub type App = Arc<AppState>;
 

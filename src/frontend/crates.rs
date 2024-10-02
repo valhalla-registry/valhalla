@@ -22,6 +22,7 @@ pub(crate) struct IndexTemplate {
 }
 
 #[derive(Debug, FromRow)]
+#[allow(unused)]
 pub struct CrateVersion {
     pub name: String,
     pub version: String,
@@ -30,6 +31,7 @@ pub struct CrateVersion {
 }
 
 #[derive(Debug, FromRow)]
+#[allow(unused)]
 pub struct Crate {
     pub id: i64,
     pub name: String,
@@ -93,6 +95,7 @@ pub async fn handler(
 
 #[derive(Template)]
 #[template(path = "crates/versions.html")]
+#[allow(unused)]
 pub struct CrateVersionTemplate {
     pub name: String,
     pub versions: Vec<CrateVersion>,
