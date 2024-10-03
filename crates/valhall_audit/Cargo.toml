@@ -1,0 +1,6 @@
+[package]
+name = "valhall_audit"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]

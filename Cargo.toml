@@ -1,5 +1,6 @@
 [workspace]
 members = [".", "crates/*"]
+exclude = ["doc_build_dir/test_project-0.4.9"]
 
 [workspace.package]
 version = "0.1.0"
@@ -11,6 +12,7 @@ valhall_storage = { path = "crates/valhall_storage" }
 valhall_models = { path = "crates/valhall_models" }
 valhall_config = { path = "crates/valhall_config" }
 valhall_docs = { path = "crates/valhall_docs" }
+valhall_audit = { path = "crates/valhall_audit" }
 
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
@@ -51,3 +53,4 @@ valhall_index.workspace = true
 valhall_storage.workspace = true
 valhall_models.workspace = true
 valhall_config.workspace = true
+valhall_audit.workspace = true

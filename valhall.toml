@@ -32,6 +32,7 @@ crates = [
 [frontend]
 assets_dir = "assets"
 auth = ["email", "github", "gitlab"]
+require_auth = true
 
 [docs]
 auto-gen = true

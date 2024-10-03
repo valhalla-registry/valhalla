@@ -28,6 +28,14 @@ create table if not exists users (
     `password` varchar(255) not null
 );
 
+-- user sessions
+create table if not exists sessions (
+    `token` varchar(255) primary key,
+    `user_id` integer not null,
+    `expires` integer not null,
+    foreign key (`user_id`) references `users`(`id`) on update cascade on delete cascade
+);
+
 -- api tokens
 create table if not exists tokens (
     `id` integer primary key autoincrement,

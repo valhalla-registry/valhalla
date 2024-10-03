@@ -169,12 +169,10 @@ async fn publish_update(
     }
 
     // check if the crate already has this or a newer version
-    let requirement = VersionReq::parse(&format!("^{}", &metadata.version))?;
+    let requirement = VersionReq::parse(&format!("={}", &metadata.version))?;
+    tracing::debug!(req =? requirement);
     if let Ok(available) = state.index.match_record(&metadata.name, requirement) {
-        return Err(ApiError2::VersionTooLow {
-            available: available.version,
-            provided: metadata.version.clone(),
-        });
+        return Err(ApiError2::VersionAlreadyExists(available.version));
     }
 
     tracing::debug!(

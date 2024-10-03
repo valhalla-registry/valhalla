@@ -1,14 +1,83 @@
-pub fn add(left: u64, right: u64) -> u64 {
-    left + right
+use std::{
+    fs::File,
+    path::{Path, PathBuf},
+    process::Command,
+    thread::JoinHandle,
+};
+
+use crossbeam::channel::{unbounded, Receiver, Sender};
+use flate2::read::GzDecoder;
+use semver::Version;
+use tar::Archive;
+
+pub struct RustdocBuilder {
+    pub source_path: PathBuf,
+    pub output_path: PathBuf,
+    pub queue: Sender<DocBuildJob>,
+    pub builder_thread_handle: JoinHandle<()>,
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+impl RustdocBuilder {
+    pub fn init(source_path: PathBuf, output_path: PathBuf) -> Self {
+        // this is the folder where the documentation will be built
+        let build_directory = Path::new("./doc_build_dir");
+        // create the folder if it does not exist yet
+        std::fs::create_dir_all(build_directory).unwrap();
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
+        let (s, r): (Sender<DocBuildJob>, Receiver<DocBuildJob>) = unbounded();
+        let handle = std::thread::spawn(move || loop {
+            let job: DocBuildJob = r.recv().unwrap();
+
+            // steps:
+            // - extract .crate file in docs build directory
+            // - run cargo doc
+            // - copy output into separate directory
+
+            // extract tarball
+            let file = File::open(&job.crate_file_path).unwrap();
+            let tar = GzDecoder::new(file);
+            Archive::new(tar).unpack(&build_directory).unwrap();
+
+            // run 'cargo doc'
+            let cmd = Command::new("cargo")
+                .arg("doc")
+                .arg("--no-deps")
+                .arg("--manifest-path")
+                .arg("Cargo.toml")
+                .current_dir(
+                    build_directory.join(format!("{}-{}", &job.crate_name, &job.crate_version)),
+                )
+                .spawn();
+
+            cmd.unwrap().wait().unwrap();
+        });
+
+        Self {
+            source_path,
+            output_path,
+            queue: s,
+            builder_thread_handle: handle,
+        }
     }
+
+    pub fn add_to_queue(&self, crate_name: String, version: Version) {
+        let crate_file_path = self
+            .source_path
+            .join(&crate_name)
+            .join(format!("{}-{}.crate", &crate_name, &version));
+
+        self.queue
+            .send(DocBuildJob {
+                crate_name,
+                crate_version: version,
+                crate_file_path,
+            })
+            .unwrap();
+    }
+}
+
+pub struct DocBuildJob {
+    pub crate_name: String,
+    pub crate_version: Version,
+    pub crate_file_path: PathBuf,
 }

@@ -46,4 +46,5 @@ pub struct StorageConfig {
 #[derive(Debug, Deserialize)]
 pub struct FrontendConfig {
     pub assets_dir: PathBuf,
+    pub require_auth: bool,
 }

@@ -19,6 +19,7 @@ pub enum ApiError2 {
     #[error("Encountered an internal error 1: {0}")]
     SerdeError(#[from] serde_json::Error),
 
+    /// Semver error
     #[error("Encountered an internal error 2: {0}")]
     SemverError(#[from] semver::Error),
 
@@ -29,21 +30,10 @@ pub enum ApiError2 {
     #[error("You are not an owner of this crate!")]
     CrateNotOwned,
 
-    #[error("Version too low! Available {available} but provided {provided}!")]
-    VersionTooLow {
-        provided: Version,
-        available: Version,
-    },
-
-    #[error("This version ({0}) does already exist!")]
+    // It is not allowed to upload a crate with a version that
+    // is already published in this registry
+    #[error("This version ({0}) already exists!")]
     VersionAlreadyExists(Version),
-
-    #[error("The crate could not be published. Try again!")]
-    UnableToPublish,
-
-    /// Wildcard error: remove for production
-    #[error("Other error: {0}")]
-    Other(String),
 }
 
 impl IntoResponse for ApiError2 {
