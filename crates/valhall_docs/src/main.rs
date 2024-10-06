@@ -1,15 +1,9 @@
-use std::path::Path;
-
-use semver::Version;
-use valhall_docs::RustdocBuilder;
+use valhall_docs::builder::DocBuilder;
 
 fn main() {
-    let source = Path::new("./storage").to_owned();
-    let output = Path::new("./generated_docs").to_owned();
+    tracing_subscriber::fmt::init();
 
-    let doc_builder = RustdocBuilder::init(source, output);
+    let mut doc_builder = DocBuilder::init().unwrap();
 
-    doc_builder.add_to_queue("third_test".into(), Version::new(0, 2, 0));
-
-    doc_builder.builder_thread_handle.join().unwrap();
+    doc_builder.build_package("test_project", "0.5.0");
 }

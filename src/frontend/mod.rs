@@ -26,7 +26,50 @@ pub fn router(config: &FrontendConfig, state: App) -> Router<App> {
         .route("/crates/:name/:version/dependencies", get(|| async {}))
         .route("/crates/:name/:version/dependents", get(|| async {}));
 
-    let docs_router = Router::new().route("/docs", get(docs::index));
+    let docs_router = Router::new()
+        // .route("/docs", get(docs::index))
+        // .route("/docs/:name", get(docs::docs_by_name))
+        // .route("/docs/:name/:version/:target/", get(docs::docs_by_version))
+        // .route(
+        //     "/docs/:name/:version/:target/*path",
+        //     get(docs::docs_by_version),
+        // )
+        .route("/:name", get(docs::rustdoc_redirector_handler))
+        .route("/:name/", get(docs::rustdoc_redirector_handler))
+        .route("/:name/:version", get(docs::rustdoc_redirector_handler))
+        .route("/:name/:version/", get(docs::rustdoc_redirector_handler))
+        .route(
+            "/:name/:version/all.html",
+            get(docs::rustdoc_html_server_handler),
+        )
+        .route(
+            "/:name/:version/help.html",
+            get(docs::rustdoc_html_server_handler),
+        )
+        .route(
+            "/:name/:version/settings.html",
+            get(docs::rustdoc_html_server_handler),
+        )
+        .route(
+            "/:name/:version/scrape-examples-help.html",
+            get(docs::rustdoc_html_server_handler),
+        )
+        .route(
+            "/:name/:version/:target",
+            get(docs::rustdoc_redirector_handler),
+        )
+        .route(
+            "/:name/:version/:target/",
+            get(docs::rustdoc_html_server_handler),
+        )
+        .route(
+            "/:name/:version/:target/*path",
+            get(docs::rustdoc_html_server_handler),
+        );
+    // .nest_service(
+    //     "/docs",
+    //     ServeDir::new("/opt/valhall/docs/").append_index_html_on_directories(true),
+    // );
 
     let mut frontend_router = Router::new()
         .route("/", get(index::handler))
@@ -41,8 +84,14 @@ pub fn router(config: &FrontendConfig, state: App) -> Router<App> {
     }
 
     // all other routes may not require authorization
-    frontend_router.merge(auth_router).nest_service(
-        "/assets",
-        ServeDir::new(&config.assets_dir).append_index_html_on_directories(false),
-    )
+    frontend_router
+        .merge(auth_router)
+        .nest_service(
+            "/assets",
+            ServeDir::new(&config.assets_dir).append_index_html_on_directories(false),
+        )
+        .nest_service(
+            "/static/rustdoc",
+            ServeDir::new("./static/rustdoc").append_index_html_on_directories(false),
+        )
 }

@@ -4,7 +4,28 @@ version.workspace = true
 edition.workspace = true
 
 [dependencies]
+# error handling
+thiserror.workspace = true
+anyhow = "1"
+
+# other
 semver.workspace = true
 crossbeam = "0.8.4"
+tempfile = "3.13.0"
+sqlx.workspace = true
+
+# data
+toml.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+
+# logging
+tracing.workspace = true
+tracing-subscriber.workspace = true
+
+# used to untar the .crate tarballs
 tar = "0.4.42"
 flate2 = "1.0.34"
+
+# actual build dependencies
+rustwide = "0.17.0"
