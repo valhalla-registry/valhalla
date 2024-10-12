@@ -7,6 +7,22 @@ pub enum Error {
     DatabaseError(#[from] sqlx::Error),
     #[error(transparent)]
     MigrationError(#[from] sqlx::migrate::MigrateError),
+    #[error(transparent)]
+    SemverError(#[from] semver::Error),
+
+    #[error("Error: {0}")]
+    Other(String),
+}
+
+impl IntoResponse for Error {
+    fn into_response(self) -> axum::response::Response {
+        Json(serde_json::json!({
+            "errors": [{
+                "detail": self.to_string()
+            }]
+        }))
+        .into_response()
+    }
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

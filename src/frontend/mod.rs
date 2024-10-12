@@ -34,37 +34,43 @@ pub fn router(config: &FrontendConfig, state: App) -> Router<App> {
         //     "/docs/:name/:version/:target/*path",
         //     get(docs::docs_by_version),
         // )
-        .route("/:name", get(docs::rustdoc_redirector_handler))
-        .route("/:name/", get(docs::rustdoc_redirector_handler))
-        .route("/:name/:version", get(docs::rustdoc_redirector_handler))
-        .route("/:name/:version/", get(docs::rustdoc_redirector_handler))
+        .route("/:name", get(docs::routes::rustdoc_redirector_handler))
+        .route("/:name/", get(docs::routes::rustdoc_redirector_handler))
+        .route(
+            "/:name/:version",
+            get(docs::routes::rustdoc_redirector_handler),
+        )
+        .route(
+            "/:name/:version/",
+            get(docs::routes::rustdoc_redirector_handler),
+        )
         .route(
             "/:name/:version/all.html",
-            get(docs::rustdoc_html_server_handler),
+            get(docs::routes::rustdoc_html_server_handler),
         )
         .route(
             "/:name/:version/help.html",
-            get(docs::rustdoc_html_server_handler),
+            get(docs::routes::rustdoc_html_server_handler),
         )
         .route(
             "/:name/:version/settings.html",
-            get(docs::rustdoc_html_server_handler),
+            get(docs::routes::rustdoc_html_server_handler),
         )
         .route(
             "/:name/:version/scrape-examples-help.html",
-            get(docs::rustdoc_html_server_handler),
+            get(docs::routes::rustdoc_html_server_handler),
         )
         .route(
             "/:name/:version/:target",
-            get(docs::rustdoc_redirector_handler),
+            get(docs::routes::rustdoc_redirector_handler),
         )
         .route(
             "/:name/:version/:target/",
-            get(docs::rustdoc_html_server_handler),
+            get(docs::routes::rustdoc_html_server_handler),
         )
         .route(
             "/:name/:version/:target/*path",
-            get(docs::rustdoc_html_server_handler),
+            get(docs::routes::rustdoc_html_server_handler),
         );
     // .nest_service(
     //     "/docs",
@@ -76,7 +82,7 @@ pub fn router(config: &FrontendConfig, state: App) -> Router<App> {
         .route("/search", get(search::handler))
         .merge(account_router)
         .merge(crates_router)
-        .merge(docs_router);
+        .nest("/docs", docs_router);
 
     if config.require_auth {
         frontend_router =
