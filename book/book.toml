@@ -1,6 +1,0 @@
-[book]
-authors = ["Luca Lewin"]
-language = "en"
-multilingual = false
-src = "src"
-title = "Valhall - The private Rust Registry"
